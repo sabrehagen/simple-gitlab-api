@@ -65,6 +65,16 @@ const self = {
       statistics: false
     }),
 
+  getProjects = (previousPages = [], page = 1) => {
+    return self.get('/projects/', undefined, { owned: true, per_page: 100, page }).then((currentPage) => {
+      const projects = [...previousPages, ...currentPage];
+      const nextPage = response.headers['x-next-page'];
+      return nextPage
+        ? getProjects(projects, page + 1)
+        : projects;
+    });
+  },
+
   deleteForkRelationship: (project_path) =>
     self.delete('/projects/' + encodeURIComponent(project_path) + '/fork'),
 
